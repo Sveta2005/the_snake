@@ -125,7 +125,7 @@ class Apple(GameObject):
         width = randint(0, GRID_WIDTH) * GRID_SIZE
         height = randint(0, GRID_HEIGHT) * GRID_SIZE
         self.position = width, height
-        
+
     # Метод draw класса Apple
     def draw(self):
         """отрисовать яблоко"""
@@ -170,14 +170,13 @@ def main():
             snake.length += 1
             apple.randomize_position()
             apple.draw()
-            
+
         if snake.get_head_position() in snake.positions[1:]:
             # столкновение с собой(если да, то reset)
             snake.reset()
             screen.fill(BOARD_BACKGROUND_COLOR)
         pygame.display.update()
-        
-        
+
 
 if __name__ == '__main__':
     main()
