@@ -2,7 +2,7 @@ from random import choice, randint
 
 import pygame as pg
 
-"""Константы для размеров поля и сетки."""
+# Константы для размеров поля и сетки
 SCREEN_WIDTH: int = 640
 SCREEN_HEIGHT: int = 480
 GRID_SIZE: int = 20
@@ -16,11 +16,12 @@ UP: POINTER = (0, -1)
 DOWN: POINTER = (0, 1)
 LEFT: POINTER = (-1, 0)
 RIGHT: POINTER = (1, 0)
-DEFAULT_OCCUPIED = []
+
 """Цвет фона - черный."""
 COLOR = tuple[int, int, int]
 BOARD_BACKGROUND_COLOR: COLOR = (0, 0, 0)
 DEFAULT_COLOR: COLOR = BOARD_BACKGROUND_COLOR
+
 """Цвет границы ячейки."""
 BORDER_COLOR: COLOR = (93, 216, 228)
 
@@ -54,7 +55,8 @@ class GameObject:
         """Метод для переопредения в дочерних классах,
         отрисовка объекта на поле.
         """
-        raise NotImplementedError()
+        raise NotImplementedError(
+            'Дочерний класс должен переопределить родительский')
 
 
 class Snake(GameObject):
@@ -66,27 +68,24 @@ class Snake(GameObject):
         self.positions: list[tuple[int, int]] = [self.position]
         self.direction = RIGHT
         self.next_direction = None
-        self.direction_new = tuple(20 * elem for elem in self.direction)
         self.last: tuple[int, int] = self.position
 
     def update_direction(self) -> None:
         """Метод обновления направления после нажатия на кнопку."""
         if self.next_direction:
             self.direction = self.next_direction
-            self.direction_new = tuple(20 * elem for elem in self.direction)
             self.next_direction = None
 
     def move(self) -> None:
         """Обновление положения змейки."""
         x, y = self.get_head_position()
         new_head: tuple[int, int] = (
-            (self.direction_new[0] + x) % SCREEN_WIDTH,
-            (self.direction_new[1] + y) % SCREEN_HEIGHT
+            (x + (self.direction[0] * GRID_SIZE)) % SCREEN_WIDTH,
+            (y + (self.direction[1] * GRID_SIZE)) % SCREEN_HEIGHT
         )
         self.positions.insert(0, new_head)
         if len(self.positions) > self.length:
             self.last = self.positions.pop()
-        DEFAULT_OCCUPIED.append(new_head)
 
     def draw(self) -> None:
         """Отрисовка змейки."""
@@ -121,7 +120,7 @@ class Apple(GameObject):
     """Яблоко и действия с ним."""
 
     def __init__(
-            self, snake_positions=DEFAULT_OCCUPIED,
+            self, snake_positions=[],
             body_color: COLOR = APPLE_COLOR) -> None:
         super().__init__(body_color=body_color)
         self.snake_positions = snake_positions
@@ -174,7 +173,7 @@ def main():
         snake.update_direction()
         if snake.get_head_position() == apple.position:
             snake.length += 1
-            apple.randomize_position(DEFAULT_OCCUPIED)
+            apple.randomize_position(snake.positions)
             apple.draw()
 
         if snake.get_head_position() in snake.positions[1:]:
